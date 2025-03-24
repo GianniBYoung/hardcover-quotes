@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"math/rand"
 	"os"
+	"strings"
+
+	"github.com/charmbracelet/log"
 
 	"github.com/machinebox/graphql"
 )
@@ -36,7 +37,19 @@ type Response struct {
 
 const apiURL = "https://api.hardcover.app/v1/graphql"
 
+func findLogLevel() log.Level {
+	switch strings.ToLower(os.Getenv("HARDCOVER_QUOTES_DEBUG")) {
+	case "debug":
+		return log.DebugLevel
+	case "warn", "warning":
+		return log.WarnLevel
+	default:
+		return log.InfoLevel
+	}
+}
+
 func main() {
+	log.SetLevel(findLogLevel())
 
 	client := graphql.NewClient(apiURL)
 	ctx := context.Background()
@@ -78,7 +91,7 @@ func main() {
 	user_info_request.Header.Set("Authorization", authToken)
 
 	if err := client.Run(ctx, user_info_request, &user_info_response); err != nil {
-		log.Fatalf("Error making GraphQL request: %v", err)
+		log.Fatal("req_err", "Error making GraphQL request", err)
 	}
 
 	quotedBooks := user_info_response.Me[0].Quoted_books
@@ -91,13 +104,13 @@ func main() {
 
 	random_book := quoted_book_ids[rand.Intn(len(quoted_book_ids))]
 
-	// Print the response
 	if len(user_info_response.Me) > 0 {
-		fmt.Println("Username:", user_info_response.Me[0].Username)
-		fmt.Println("Username:", user_info_response.Me[0].Flair)
-		fmt.Println("quoted books", quoted_book_ids)
-		fmt.Println("random book", random_book)
+		log.Info("Username", user_info_response.Me[0].Username)
+		log.Info("Flair", user_info_response.Me[0].Flair)
+		log.Info("quoted books", quoted_book_ids)
+		log.Info("random book", random_book)
 	} else {
-		fmt.Println("No user data received")
+		log.Error("No user data received")
+		log.Debug("full response", "", user_info_response)
 	}
 }
