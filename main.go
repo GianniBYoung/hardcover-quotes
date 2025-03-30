@@ -10,6 +10,10 @@ import (
 	"github.com/machinebox/graphql"
 )
 
+const apiURL = "https://api.hardcover.app/v1/graphql"
+
+var authToken string
+
 type Response struct {
 	Me []struct {
 		Username     string `json:"username"`
@@ -32,21 +36,6 @@ type Response struct {
 			} `json:"book"`
 		} `json:"user_books"`
 	} `json:"me"`
-}
-
-const apiURL = "https://api.hardcover.app/v1/graphql"
-
-func findLogLevel() log.Level {
-
-	log.SetReportTimestamp(false)
-	switch strings.ToLower(os.Getenv("HCQ_INFO_LEVEL")) {
-	case "debug":
-		return log.DebugLevel
-	case "warn", "warning":
-		return log.WarnLevel
-	default:
-		return log.InfoLevel
-	}
 }
 
 func queryUserInfo(
@@ -95,15 +84,28 @@ func queryUserInfo(
 	return &resp, nil
 }
 
-func main() {
-	log.SetLevel(findLogLevel())
-	client := graphql.NewClient(apiURL)
-	ctx := context.Background()
-	authToken := os.Getenv("HARDCOVER_API_TOKEN")
+func init() {
+	log.SetReportTimestamp(false)
+	switch strings.ToLower(os.Getenv("HCQ_INFO_LEVEL")) {
+	case "debug":
+		log.SetLevel(log.DebugLevel)
+	case "warn", "warning":
+		log.SetLevel(log.WarnLevel)
+	default:
+		log.SetLevel(log.InfoLevel)
+	}
+
+	authToken = os.Getenv("HARDCOVER_API_TOKEN")
 
 	if authToken == "" {
 		log.Fatal("HARDCOVER_API_TOKEN is not set")
 	}
+
+}
+
+func main() {
+	client := graphql.NewClient(apiURL)
+	ctx := context.Background()
 
 	user_info_response, _ := queryUserInfo(ctx, *client, authToken)
 
