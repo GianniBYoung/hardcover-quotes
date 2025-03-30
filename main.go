@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/log"
-
 	"github.com/machinebox/graphql"
 )
 
@@ -25,11 +24,11 @@ type Response struct {
 				Book_id       int    `json:"id"`
 				Book_title    string `json:"title"`
 				Book_subtitle string `json:"subtitle"`
-				// Contributions []struct {
-				// 	Author struct {
-				// 		Name string `json:"name"`
-				// 	} `json:"author"`
-				// } `json:"contributions"`
+				Contributions []struct {
+					Author struct {
+						Name string `json:"name"`
+					} `json:"author"`
+				} `json:"contributions"`
 			} `json:"book"`
 		} `json:"user_books"`
 	} `json:"me"`
@@ -38,6 +37,8 @@ type Response struct {
 const apiURL = "https://api.hardcover.app/v1/graphql"
 
 func findLogLevel() log.Level {
+
+	log.SetReportTimestamp(false)
 	switch strings.ToLower(os.Getenv("HCQ_INFO_LEVEL")) {
 	case "debug":
 		return log.DebugLevel
@@ -114,15 +115,19 @@ func main() {
 		quoted_book_ids = append(quoted_book_ids, quotedBook.Book.Book_id)
 	}
 
-	random_book := quoted_book_ids[rand.Intn(len(quoted_book_ids))]
+	random_book := quotedBooks[rand.Intn(len(quoted_book_ids))].Book
 
 	if len(user_info_response.Me) > 0 {
 		log.Info("", user_info_response.Me[0].Username, "Username")
 		log.Info("", user_info_response.Me[0].Flair, "Flair")
-		log.Info("", quoted_book_ids, "quoted_book_ids")
-		log.Info("", random_book, "random_book")
+		log.Debug("", quoted_book_ids, "quoted_book_ids")
+		log.Debug("", "random_book_id", random_book.Book_id)
+		log.Info("", random_book.Book_title, "random_book_title")
 	} else {
 		log.Error("No user data received")
 		log.Debug("", user_info_response, "user_info_response")
+		os.Exit(1)
 	}
+
+	log.Infof("Finding random quote from %s", random_book.Book_title)
 }
