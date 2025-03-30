@@ -48,16 +48,12 @@ func findLogLevel() log.Level {
 	}
 }
 
-func main() {
-	log.SetLevel(findLogLevel())
+func queryUserInfo(
+	ctx context.Context,
+	client graphql.Client,
+	authToken string,
+) (*Response, error) {
 
-	client := graphql.NewClient(apiURL)
-	ctx := context.Background()
-	user_info_response := Response{}
-	authToken := os.Getenv("HARDCOVER_API_TOKEN")
-	if authToken == "" {
-		log.Fatal("HARDCOVER_API_TOKEN is not set")
-	}
 	// Define the GraphQL query
 	user_info_request := graphql.NewRequest(`
 		query MyQuery {
@@ -87,12 +83,28 @@ func main() {
 		}
 		}
     `)
-
 	user_info_request.Header.Set("Authorization", authToken)
 
-	if err := client.Run(ctx, user_info_request, &user_info_response); err != nil {
+	var resp Response
+
+	if err := client.Run(ctx, user_info_request, &resp); err != nil {
 		log.Fatal("req_err", "Error making GraphQL request", err)
 	}
+
+	return &resp, nil
+}
+
+func main() {
+	log.SetLevel(findLogLevel())
+	client := graphql.NewClient(apiURL)
+	ctx := context.Background()
+	authToken := os.Getenv("HARDCOVER_API_TOKEN")
+
+	if authToken == "" {
+		log.Fatal("HARDCOVER_API_TOKEN is not set")
+	}
+
+	user_info_response, _ := queryUserInfo(ctx, *client, authToken)
 
 	quotedBooks := user_info_response.Me[0].Quoted_books
 
