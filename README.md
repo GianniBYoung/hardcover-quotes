@@ -1,3 +1,4 @@
+# Hardcover Quotes - HCQ
 Go program to fetch a random quote from your [hardcover.app](https://hardcover.app) reading journals and output it to your terminal (think message of the day or on initial shell invocation).
 
 
@@ -9,4 +10,21 @@ ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcov
 
 # Installation
 
+# Usage
+
+# Configuration Options
+## Environmental Variables
+- `HARDCOVER_API_TOKEN` -> required to set be able to access your profile and retrieve quotes
+- `HCQ_INFO_LEVEL` -> increase the verbosity for debugging
+  - `debug`
+  - `info`
+  - `warning`
+
 # Inspiration
+Links to some projects that inspired me to start this project, check them out!
+
+- [koblime - exporting highlights from kobo devices](https://kobli.me)
+  - This program is pretty cool and helps keep track of highlights but offers little in the way of syncing to other platforms at the moment
+
+- [Spotify Recently Played README](https://github.com/JeffreyCA/spotify-recently-played-readme)
+  - Eventually I want to hook something up to my github profile to dynamically update it with a quote generated from HCQ

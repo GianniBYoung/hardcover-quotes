@@ -38,7 +38,7 @@ type Response struct {
 const apiURL = "https://api.hardcover.app/v1/graphql"
 
 func findLogLevel() log.Level {
-	switch strings.ToLower(os.Getenv("HARDCOVER_QUOTES_DEBUG")) {
+	switch strings.ToLower(os.Getenv("HCQ_INFO_LEVEL")) {
 	case "debug":
 		return log.DebugLevel
 	case "warn", "warning":
@@ -105,12 +105,12 @@ func main() {
 	random_book := quoted_book_ids[rand.Intn(len(quoted_book_ids))]
 
 	if len(user_info_response.Me) > 0 {
-		log.Info("Username", user_info_response.Me[0].Username)
-		log.Info("Flair", user_info_response.Me[0].Flair)
-		log.Info("quoted books", quoted_book_ids)
-		log.Info("random book", random_book)
+		log.Info("", user_info_response.Me[0].Username, "Username")
+		log.Info("", user_info_response.Me[0].Flair, "Flair")
+		log.Info("", quoted_book_ids, "quoted_book_ids")
+		log.Info("", random_book, "random_book")
 	} else {
 		log.Error("No user data received")
-		log.Debug("full response", "", user_info_response)
+		log.Debug("", user_info_response, "user_info_response")
 	}
 }
