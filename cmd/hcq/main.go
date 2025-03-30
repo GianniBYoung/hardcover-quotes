@@ -100,10 +100,10 @@ func init() {
 	switch strings.ToLower(os.Getenv("HCQ_INFO_LEVEL")) {
 	case "debug":
 		log.SetLevel(log.DebugLevel)
-	case "warn", "warning":
-		log.SetLevel(log.WarnLevel)
-	default:
+	case "info":
 		log.SetLevel(log.InfoLevel)
+	default:
+		log.SetLevel(log.WarnLevel)
 	}
 
 	authToken = os.Getenv("HARDCOVER_API_TOKEN")
