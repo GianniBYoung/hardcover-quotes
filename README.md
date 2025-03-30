@@ -9,7 +9,7 @@ ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcov
   - Token can be grabbed from [hardcover.app/account/api](https://hardcover.app/account/api)
 
 # Installation
-`go install github.com/GianniBYoung/hardcover-quotes@latest`
+`go install github.com/GianniBYoung/hardcover-quotes/cmd/hcq@latest`
 
 # Usage and Applications
 `hcq` will output a formatted string to `stdout`
