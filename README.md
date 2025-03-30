@@ -9,9 +9,18 @@ ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcov
   - Token can be grabbed from [hardcover.app/account/api](https://hardcover.app/account/api)
 
 # Installation
+`go install github.com/GianniBYoung/hardcover-quotes@latest`
 
-# Usage
+# Usage and Applications
+`hcq` will output a formatted string to `stdout`
 
+- Pipe it to `lolcat` or `cowsay` for more fun!
+- Set the MOTD(message of the day)
+- Print a quote upon shell invocation!
+
+```bash
+[[ $SHLVL -le 1 ]] && hcq
+```
 # Configuration Options
 ## Environmental Variables
 - `HARDCOVER_API_TOKEN` -> required to set be able to access your profile and retrieve quotes
@@ -28,3 +37,8 @@ Links to some projects that inspired me to start this project, check them out!
 
 - [Spotify Recently Played README](https://github.com/JeffreyCA/spotify-recently-played-readme)
   - Eventually I want to hook something up to my github profile to dynamically update it with a quote generated from HCQ
+
+# Contributing
+Contributions appreciated!
+
+Take a look at the issues, submit feature requests, submit Pull requests etc
