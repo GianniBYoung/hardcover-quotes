@@ -118,14 +118,14 @@ func main() {
 	random_book := quotedBooks[rand.Intn(len(quoted_book_ids))].Book
 
 	if len(user_info_response.Me) > 0 {
-		log.Info("", user_info_response.Me[0].Username, "Username")
-		log.Info("", user_info_response.Me[0].Flair, "Flair")
-		log.Debug("", quoted_book_ids, "quoted_book_ids")
+		log.Info("", "Username", user_info_response.Me[0].Username)
+		log.Info("", "Flair", user_info_response.Me[0].Flair)
+		log.Debug("", "quoted_book_ids", quoted_book_ids)
 		log.Debug("", "random_book_id", random_book.Book_id)
-		log.Info("", random_book.Book_title, "random_book_title")
+		log.Info("", "random_book_title", random_book.Book_title)
 	} else {
 		log.Error("No user data received")
-		log.Debug("", user_info_response, "user_info_response")
+		log.Debug("", "user_info_response", user_info_response)
 		os.Exit(1)
 	}
 
