@@ -13,6 +13,8 @@ ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcov
 
 # Usage and Applications
 `hcq` will output a formatted string to `stdout`
+![Hardcover Quotes Screenshot](assets/standard.png)
+
 
 - Pipe it to `lolcat` or `cowsay` for more fun!
 - Set the MOTD(message of the day)
@@ -21,6 +23,9 @@ ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcov
 ```bash
 [[ $SHLVL -le 1 ]] && hcq
 ```
+
+![Hardcover Quotes Screenshot](assets/lolcat.png)
+
 # Configuration Options
 ## Environmental Variables
 - `HARDCOVER_API_TOKEN` -> required to set be able to access your profile and retrieve quotes
