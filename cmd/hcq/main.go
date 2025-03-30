@@ -115,6 +115,19 @@ func init() {
 }
 
 func printQuote(quote PrettyQuote) {
+	var b strings.Builder
+
+	b.WriteString(quote.BookTitle + " - " + quote.BookSubTitle)
+
+	b.WriteString("\n")
+	b.WriteString("\tby " + quote.BookAuthor)
+	b.WriteString("\n\n~~~~~~~~~~~~~~~\n")
+	b.WriteString(quote.Quote)
+	b.WriteString("\n~~~~~~~~~~~~~~~\n\n")
+	b.WriteString(
+		quote.HardcoverUser + " - " + quote.HardcoverFlair + " - " + quote.HardcoverProfileLink,
+	)
+	fmt.Println(b.String())
 
 }
 
@@ -152,7 +165,7 @@ func main() {
 	quote := strings.TrimSpace(
 		quotedBooks[random_book_index].Reading_journals[rand.Intn(number_of_quotes)].Quote,
 	)
-	log.Info(quote)
+	// log.Info(quote)
 	exportedQuote := PrettyQuote{
 		Quote:          quote,
 		BookTitle:      random_book.Book_title,
