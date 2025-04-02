@@ -135,7 +135,10 @@ func main() {
 	client := graphql.NewClient(apiURL)
 	ctx := context.Background()
 
-	user_info_response, _ := queryUserInfo(ctx, *client, authToken)
+	user_info_response, err := queryUserInfo(ctx, *client, authToken)
+	if err != nil {
+		log.Fatal("query error", err)
+	}
 
 	quotedBooks := user_info_response.Me[0].Quoted_books
 
