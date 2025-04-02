@@ -6,7 +6,7 @@ ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcov
 
 
 WARNING: the hardcover api is still under development and might have changes that break this project.
-If you run into fatal errors please file an issue.
+[please review the api access page for more information](https://hardcover.app/account/api)
 
 
 # Requirements
