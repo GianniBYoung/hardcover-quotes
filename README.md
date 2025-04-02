@@ -4,6 +4,11 @@ Go program to fetch a random quote from your [hardcover.app](https://hardcover.a
 
 ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcover.app/@countmancy)
 
+
+WARNING: the hardcover api is still under development and might have changes that break this project.
+If you run into fatal errors please file an issue.
+
+
 # Requirements
 - hardcover.app api key stored in the env var `HARDCOVER_API_TOKEN`
   - Token can be grabbed from [hardcover.app/account/api](https://hardcover.app/account/api)
