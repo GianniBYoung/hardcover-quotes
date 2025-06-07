@@ -17,13 +17,16 @@ WARNING: the hardcover api is still under development and might have changes tha
 `go install github.com/GianniBYoung/hardcover-quotes/cmd/hcq@latest`
 
 # Usage and Applications
-`hcq` will output a formatted string to `stdout`
+- `hcq` will output a formatted string to `stdout`
+- A webhook will be sent if the env var `HCQ_WEBHOOK_URL` is set
 ![Hardcover Quotes Screenshot](assets/standard.png)
 
 
 - Pipe it to `lolcat` or `cowsay` for more fun!
 - Set the MOTD(message of the day)
 - Print a quote upon shell invocation!
+- Send a webhook to a service such as [trml for displaying the quote on an e-ink display!](https://usetrmnl.com)
+  - note, the link above contains my referral code if you decide to purchase a trml device
 
 ```bash
 [[ $SHLVL -le 1 ]] && hcq
@@ -34,6 +37,7 @@ WARNING: the hardcover api is still under development and might have changes tha
 # Configuration Options
 ## Environmental Variables
 - `HARDCOVER_API_TOKEN` -> required to set be able to access your profile and retrieve quotes
+- `HCQ_WEBHOOK_URL` -> If set, will send a POST request to the specified URL with the quote
 - `HCQ_INFO_LEVEL` -> increase the verbosity for debugging
   - `debug`
   - `info`
