@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"os"
 	"strings"
 
@@ -16,13 +19,13 @@ const apiURL = "https://api.hardcover.app/v1/graphql"
 var authToken string
 
 type PrettyQuote struct {
-	Quote                string
-	BookTitle            string
-	BookSubTitle         string
-	BookAuthor           string
-	HardcoverUser        string
-	HardcoverFlair       string
-	HardcoverProfileLink string
+	Quote                string `json:"quote"`
+	BookTitle            string `json:"book_title"`
+	BookSubTitle         string `json:"book_subtitle"`
+	BookAuthor           string `json:"book_author"`
+	HardcoverUser        string `json:"user"`
+	HardcoverFlair       string `json:"flair"`
+	HardcoverProfileLink string `json:"profile_link"`
 }
 
 type Response struct {
@@ -47,6 +50,23 @@ type Response struct {
 			} `json:"book"`
 		} `json:"user_books"`
 	} `json:"me"`
+}
+
+func (q PrettyQuote) sendWebhook(url string) error {
+	jsonData, err := json.Marshal(struct {
+		MergeVariables PrettyQuote `json:"merge_variables"`
+	}{MergeVariables: q})
+	if err != nil {
+		log.Error("json_marshal_error", "Error marshalling PrettyQuote to JSON", err)
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	if err != nil {
+		log.Error("http_post_error", "Error sending webhook", err)
+	}
+	defer resp.Body.Close()
+
+	return nil
 }
 
 func queryUserInfo(
@@ -168,7 +188,7 @@ func main() {
 	quote := strings.TrimSpace(
 		quotedBooks[random_book_index].Reading_journals[rand.Intn(number_of_quotes)].Quote,
 	)
-	// log.Info(quote)
+
 	exportedQuote := PrettyQuote{
 		Quote:          quote,
 		BookTitle:      random_book.Book_title,
@@ -183,4 +203,13 @@ func main() {
 	}
 
 	printQuote(exportedQuote)
+	// send webhook if HCQ_WEBHOOK_URL is set
+	if os.Getenv("HCQ_WEBHOOK_URL") == "" {
+		os.Exit(0)
+	} else {
+		err = exportedQuote.sendWebhook(os.Getenv("HCQ_WEBHOOK_URL"))
+		if err != nil {
+			log.Error("webhook_error", "Error sending webhook", err)
+		}
+	}
 }
