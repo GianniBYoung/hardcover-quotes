@@ -1,8 +1,8 @@
 # Hardcover Quotes - HCQ
-Go program to fetch a random quote from your [hardcover.app](https://hardcover.app) reading journals and output it to your terminal (think message of the day or on initial shell invocation).
+Go program to fetch a random quote from your [hardcover.app](https://hardcover.app/join?referrer_id=28377) reading journals and output it to your terminal (think message of the day or on initial shell invocation).
 
 
-ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcover.app/@countmancy)
+ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcover.app/@countmancy?referrer_id=28377)
 
 
 WARNING: the hardcover api is still under development and might have changes that break this project.
