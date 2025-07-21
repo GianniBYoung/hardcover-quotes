@@ -105,6 +105,10 @@ func queryUserInfo(
 		}
     `)
 	user_info_request.Header.Set("Authorization", authToken)
+	user_info_request.Header.Set(
+		"User-Agent",
+		"hcq - https://github.com/GianniBYoung/hardcover-quotes",
+	)
 
 	var resp Response
 
