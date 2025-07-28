@@ -14,6 +14,7 @@ WARNING: the hardcover api is still under development and might have changes tha
   - Token can be grabbed from [hardcover.app/account/api](https://hardcover.app/account/api)
 
 # Installation
+ Grab the [latest binary release](https://github.com/GianniBYoung/hardcover-quotes/releases/latest) or install via `go`:
 `go install github.com/GianniBYoung/hardcover-quotes/cmd/hcq@latest`
 
 # Usage and Applications
