@@ -19,6 +19,9 @@ builds:
       - 7
     env:
       - CGO_ENABLED=0
+archives:
+  - formats:
+      - binary
 release:
   draft: true
 checksum:
