@@ -1,0 +1,25 @@
+---
+version: 2
+project_name: hcq
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - main: ./cmd/hcq
+    binary: hcq
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - arm
+      - arm64
+      - amd64
+    goarm:
+      - 6
+      - 7
+    env:
+      - CGO_ENABLED=0
+release:
+  draft: true
+checksum:
+  name_template: checksums.txt
