@@ -72,7 +72,6 @@ func (q PrettyQuote) sendWebhook(url string) error {
 func queryUserInfo(
 	ctx context.Context,
 	client graphql.Client,
-	authToken string,
 ) (*Response, error) {
 
 	// Define the GraphQL query
@@ -164,7 +163,7 @@ func main() {
 	client := graphql.NewClient(apiURL)
 	ctx := context.Background()
 
-	user_info_response, err := queryUserInfo(ctx, *client, authToken)
+	user_info_response, err := queryUserInfo(ctx, *client)
 	if err != nil {
 		log.Fatal("query error", err)
 	}
