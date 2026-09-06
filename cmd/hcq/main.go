@@ -136,6 +136,11 @@ func init() {
 		log.Fatal("HARDCOVER_API_TOKEN is not set")
 	}
 
+	authToken = strings.TrimSpace(authToken)
+	if !strings.HasPrefix(authToken, "Bearer ") {
+		authToken = "Bearer " + authToken
+	}
+
 }
 
 func printQuote(quote PrettyQuote) {
