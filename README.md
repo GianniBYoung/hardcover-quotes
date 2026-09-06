@@ -3,12 +3,9 @@ Go program to fetch a random quote from your [hardcover.app](https://hardcover.a
 
 ps. add me on hardcover 🤓 [https://hardcover.app/@countmancy](https://hardcover.app/@countmancy?referrer_id=28377)
 
-WARNING: the hardcover api is still under development and might have changes that break this project.
-[please review the api access page for more information](https://hardcover.app/account/api)
-
 ## Requirements
 - hardcover.app api key stored in the env var `HARDCOVER_API_TOKEN`
-  - Token can be grabbed from [hardcover.app/account/api](https://hardcover.app/account/api)
+  - Token with necessary read-only permissions can be generated directly from this [link:](https://hardcover.app/account/api/keys/new?scope=read:me+read:library+read:journal+read:catalog)
 
 ## Installation
  Grab the [latest binary release](https://github.com/GianniBYoung/hardcover-quotes/releases/latest) or install via `go`:
@@ -23,7 +20,6 @@ WARNING: the hardcover api is still under development and might have changes tha
 - Set the MOTD(message of the day)
 - Print a quote upon shell invocation!
 - Send a webhook to a service such as [trml for displaying the quote on an e-ink display!](https://usetrmnl.com)
-  - note, the link above contains my referral code if you decide to purchase a trml device
 
 ```bash
 [[ $SHLVL -le 1 ]] && hcq
