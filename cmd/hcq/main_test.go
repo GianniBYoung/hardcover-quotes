@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/charmbracelet/log"
@@ -20,16 +21,20 @@ func TestMain(m *testing.M) {
 
 	client = graphql.NewClient(apiURL)
 	ctx = context.Background()
-	authToken := os.Getenv("HARDCOVER_API_TOKEN")
-	if authToken == "" {
+	rawToken := os.Getenv("HARDCOVER_API_TOKEN")
+	if rawToken == "" {
 		log.Info("api token not set")
 		authSet = false
 	} else {
+		authToken = strings.TrimSpace(rawToken)
+		if !strings.HasPrefix(authToken, "Bearer ") {
+			authToken = "Bearer " + authToken
+		}
 		var err error
 		authSet = true
-		user_info_response, err = queryUserInfo(ctx, *client, authToken)
+		user_info_response, err = queryUserInfo(ctx, *client)
 		if err != nil {
-			log.Fatal("failed to parse api", user_info_response)
+			log.Fatal("failed to parse api", err)
 		}
 
 	}

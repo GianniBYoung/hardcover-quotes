@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/machinebox/graphql"
@@ -58,13 +59,20 @@ func (q PrettyQuote) sendWebhook(url string) error {
 	}{MergeVariables: q})
 	if err != nil {
 		log.Error("json_marshal_error", "Error marshalling PrettyQuote to JSON", err)
+		return err
 	}
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Post(url, "application/json", bytes.NewBuffer(jsonData))
 	if err != nil {
 		log.Error("http_post_error", "Error sending webhook", err)
+		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return fmt.Errorf("webhook responded with status: %s", resp.Status)
+	}
 
 	return nil
 }
@@ -112,7 +120,7 @@ func queryUserInfo(
 	var resp Response
 
 	if err := client.Run(ctx, user_info_request, &resp); err != nil {
-		log.Fatal("req_err", "Error making GraphQL request", err)
+		return nil, fmt.Errorf("error making GraphQL request: %w", err)
 	}
 
 	return &resp, nil
@@ -128,18 +136,6 @@ func init() {
 	default:
 		log.SetLevel(log.WarnLevel)
 	}
-
-	authToken = os.Getenv("HARDCOVER_API_TOKEN")
-
-	if authToken == "" {
-		log.Fatal("HARDCOVER_API_TOKEN is not set")
-	}
-
-	authToken = strings.TrimSpace(authToken)
-	if !strings.HasPrefix(authToken, "Bearer ") {
-		authToken = "Bearer " + authToken
-	}
-
 }
 
 func printQuote(quote PrettyQuote) {
@@ -160,63 +156,74 @@ func printQuote(quote PrettyQuote) {
 }
 
 func main() {
+	authToken = os.Getenv("HARDCOVER_API_TOKEN")
+	if authToken == "" {
+		log.Fatal("HARDCOVER_API_TOKEN is not set")
+	}
+
+	authToken = strings.TrimSpace(authToken)
+	if !strings.HasPrefix(authToken, "Bearer ") {
+		authToken = "Bearer " + authToken
+	}
+
 	client := graphql.NewClient(apiURL)
 	ctx := context.Background()
 
 	user_info_response, err := queryUserInfo(ctx, *client)
 	if err != nil {
-		log.Fatal("query error", err)
+		log.Fatal("query error", "err", err)
 	}
 
-	quotedBooks := user_info_response.Me[0].Quoted_books
-
-	quoted_book_ids := make([]int, 0, len(quotedBooks))
-
-	for _, quotedBook := range quotedBooks {
-		quoted_book_ids = append(quoted_book_ids, quotedBook.Book.Book_id)
-	}
-
-	random_book_index := rand.Intn(len(quoted_book_ids))
-	random_book := quotedBooks[random_book_index].Book
-
-	if len(user_info_response.Me) > 0 {
-		log.Info("", "Username", user_info_response.Me[0].Username)
-		log.Info("", "Flair", user_info_response.Me[0].Flair)
-		log.Debug("", "quoted_book_ids", quoted_book_ids)
-		log.Debug("", "random_book_id", random_book.Book_id)
-		log.Info("", "random_book_title", random_book.Book_title)
-	} else {
-		log.Error("No user data received")
-		log.Debug("", "user_info_response", user_info_response)
+	if len(user_info_response.Me) == 0 {
+		log.Error("No user data received from Hardcover")
 		os.Exit(1)
 	}
 
+	user := user_info_response.Me[0]
+	quotedBooks := user.Quoted_books
+
+	if len(quotedBooks) == 0 {
+		log.Warn("No books with quotes found in reading journals")
+		os.Exit(0)
+	}
+
+	random_book_index := rand.Intn(len(quotedBooks))
+	random_book := quotedBooks[random_book_index].Book
+
+	log.Info("", "Username", user.Username)
+	log.Info("", "Flair", user.Flair)
+	log.Debug("", "random_book_id", random_book.Book_id)
+	log.Info("", "random_book_title", random_book.Book_title)
+
+	journals := quotedBooks[random_book_index].Reading_journals
+	if len(journals) == 0 {
+		log.Warn("Selected book has no quote entries")
+		os.Exit(0)
+	}
+
 	log.Infof("Finding random quote from %s", random_book.Book_title)
-	number_of_quotes := len(quotedBooks[random_book_index].Reading_journals)
-	quote := strings.TrimSpace(
-		quotedBooks[random_book_index].Reading_journals[rand.Intn(number_of_quotes)].Quote,
-	)
+	quote := strings.TrimSpace(journals[rand.Intn(len(journals))].Quote)
+
+	author := "Unknown Author"
+	if len(random_book.Contributions) > 0 && random_book.Contributions[0].Author.Name != "" {
+		author = random_book.Contributions[0].Author.Name
+	}
 
 	exportedQuote := PrettyQuote{
-		Quote:          quote,
-		BookTitle:      random_book.Book_title,
-		BookSubTitle:   random_book.Book_subtitle,
-		BookAuthor:     random_book.Contributions[0].Author.Name,
-		HardcoverUser:  user_info_response.Me[0].Username,
-		HardcoverFlair: user_info_response.Me[0].Flair,
-		HardcoverProfileLink: fmt.Sprintf(
-			"https://hardcover.app/@%s",
-			user_info_response.Me[0].Username,
-		),
+		Quote:                quote,
+		BookTitle:            random_book.Book_title,
+		BookSubTitle:         random_book.Book_subtitle,
+		BookAuthor:           author,
+		HardcoverUser:        user.Username,
+		HardcoverFlair:       user.Flair,
+		HardcoverProfileLink: fmt.Sprintf("https://hardcover.app/@%s", user.Username),
 	}
 
 	printQuote(exportedQuote)
-	// send webhook if HCQ_WEBHOOK_URL is set
-	if os.Getenv("HCQ_WEBHOOK_URL") == "" {
-		os.Exit(0)
-	} else {
-		err = exportedQuote.sendWebhook(os.Getenv("HCQ_WEBHOOK_URL"))
-		if err != nil {
+
+	webhookURL := os.Getenv("HCQ_WEBHOOK_URL")
+	if webhookURL != "" {
+		if err := exportedQuote.sendWebhook(webhookURL); err != nil {
 			log.Error("webhook_error", "Error sending webhook", err)
 		}
 	}
